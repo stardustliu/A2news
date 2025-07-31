@@ -27,7 +27,15 @@ interface Res {
 
 export default defineSource(async () => {
   const url = "https://weibo.com/ajax/side/hotSearch"
-  const res: Res = await myFetch(url)
+  // 先获取cookie
+  const cookie = (await $fetch.raw("https://weibo.com/")).headers.getSetCookie()
+  const res: Res = await myFetch(url, {
+    headers: {
+      "cookie": cookie.join("; "),
+      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36",
+      "Referer": "https://weibo.com/",
+    },
+  })
   return res.data.realtime
     .filter(k => !k.is_ad)
     .map((k) => {
