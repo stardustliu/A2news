@@ -7,26 +7,26 @@ import { safeParseString } from "~/utils"
 async function uploadMetadata(metadata: PrimitiveMetadata) {
   const jwt = safeParseString(localStorage.getItem("jwt"))
   if (!jwt) return
-  await myFetch("/me/sync", {
+  await fetch(`/api/me/sync`, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${jwt}`,
     },
-    body: {
+    body: JSON.stringify({
       data: metadata.data,
       updatedTime: metadata.updatedTime,
-    },
-  })
+    }),
+  }).then(res => res.json())
 }
 
 async function downloadMetadata(): Promise<PrimitiveMetadata | undefined> {
   const jwt = safeParseString(localStorage.getItem("jwt"))
   if (!jwt) return
-  const { data, updatedTime } = await myFetch("/me/sync", {
+  const { data, updatedTime } = await fetch(`/api/me/sync`, {
     headers: {
       Authorization: `Bearer ${jwt}`,
     },
-  }) as PrimitiveMetadata
+  }).then(res => res.json())
   // 不用同步 action 字段
   if (data) {
     return {

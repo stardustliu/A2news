@@ -56,7 +56,7 @@ function NewsCard({ id, setHandleRef }: NewsCardProps) {
     queryKey: ["source", id],
     queryFn: async ({ queryKey }) => {
       const id = queryKey[1] as SourceID
-      let url = `/s?id=${id}`
+      let url = `s?id=${id}`  // 从 "/s?id=${id}" → "s?id=${id}"
       const headers: Record<string, any> = {}
       if (refetchSources.has(id)) {
         url = `/s?id=${id}&latest`
@@ -69,9 +69,9 @@ function NewsCard({ id, setHandleRef }: NewsCardProps) {
         return cacheSources.get(id)
       }
 
-      const response: SourceResponse = await myFetch(url, {
+      const response: SourceResponse = await fetch(`/api/s?id=${id}${refetch ? '&latest' : ''}`, {
         headers,
-      })
+      }).then(res => res.json())
 
       function diff() {
         try {
